@@ -23,11 +23,9 @@ library(lubridate)
 
 # Set variables and function
 setwd(path)
-timestart  <- paste0("time >= '", y_sel-1, "-01-01 00:00:00'")
 reso       <- 10
 lvls.gro <- c("off season", "high GRO", "above avg. GRO", "below avg. GRO", "poor GRO")
 lvls.twd <- c("high TWD", "above avg. TWD","below avg. TWD", "low TWD")
-
 
 stat.smooth <- function(color) {
   ggplot2::stat_smooth(
@@ -57,19 +55,13 @@ dfsignal <- setNames(data.frame(matrix(ncol = 22, nrow = 0)),
                      c("Series", "Site_ID", "Site_XCor","Site_YCor","Region","Species","RelGRO","RelGRO_1","RelGRO_2","RelGRO_3","RelGRO_4", "GRO","GRO_1","GRO_2","GRO_3","GRO_4", "TWD","TWD_1","TWD_2","TWD_3","TWD_4","last_doy"))
 dfsignalactual <- dfsignal
 
-
 # PROCESS DATA #####################################################################################################
 
 # Plot GRO and TWD of selected year and historical range ----
 for (ii in 1:dim(metadata)[1]) {
   
-  # Download best available data set with LM data combined with new L2 data
+  # Load data set with LM data combined with new L2 data
   data_L2M <- readRDS(paste0(metadata$Seriesname[ii],".Rds"))
-  
-  # Check latest data point in data_L2M
-  lastdata_L2Mpoint <- as.numeric(yday(data_L2M$ts[length(data_L2M$ts)]))
-  doy_today <- as.numeric(yday(Sys.Date()))
-  writeLines(paste0("Latest doy in data set ",metadata$Seriesname[ii],": ",lastdata_L2Mpoint,". Today is DOY: ", doy_today))
   
   data_L2M$series <- metadata$Seriesname[ii]
   data_L2M <- data_L2M %>%
@@ -102,7 +94,6 @@ for (ii in 1:dim(metadata)[1]) {
   
   df <- df %>%
     mutate(dec.time = as.numeric(dec.date)-as.numeric(year))
-  
   
   # Summarise historic data with all years before the selected year
   dfhist <- df %>%
